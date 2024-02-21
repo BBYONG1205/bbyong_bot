@@ -482,7 +482,7 @@ async def 돌깎기게임(interaction: discord.Interaction, 증가능력: str, �
                 감능_남은기회 = 10 - 감소능력_시도횟수
                 감소능력__남은기회 = 감소능력_남은기회표시 * 감능_남은기회
 
-                edit_embed = discord.Embed(title=f"**돌꺆기 게임**", color=0xffffff)
+                edit_embed = discord.Embed(title=f"**돌깎기 게임**", color=0xffffff)
                 edit_embed.add_field(name=f"**성공확률** ```{success_rate}%```", value="", inline=False)
                 edit_embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_결과}{증가능력1_남은기회}\n```", inline=False)
                 edit_embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_결과}{증가능력2_남은기회}\n```", inline=False)
@@ -554,7 +554,7 @@ async def 돌깎기게임(interaction: discord.Interaction, 증가능력: str, �
                 감능_남은기회 = 10 - 감소능력_시도횟수
                 감소능력__남은기회 = 감소능력_남은기회표시 * 감능_남은기회
 
-                edit_embed = discord.Embed(title=f"**돌꺾기 게임**", color=0xffffff)
+                edit_embed = discord.Embed(title=f"**돌깎기 게임**", color=0xffffff)
                 edit_embed.add_field(name=f"**성공확률** ```{success_rate}%```", value="", inline=False)
                 edit_embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_결과}{증가능력1_남은기회}\n```", inline=False)
                 edit_embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_결과}{증가능력2_남은기회}\n```", inline=False)
