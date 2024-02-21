@@ -3,7 +3,7 @@ from discord import app_commands
 from collections import defaultdict
 import asyncio
 from typing import Any, Literal
-from bbyong_event import 채팅_매크로, 이미지_매크로, 단어_매크로, 선택지_매크로
+from bbyong_event import 채팅_매크로, 이미지_매크로, 선택지_매크로
 from bbyong_commands import 멤버_등록, 멤버_삭제, 내전_모집, 내전_참여, 내전_참여취소, 내전_시작, 경매계산기, 닉네임등록, 친구추가, 돌깍기게임
 from bbyong_embed import 멤버_정보, 내_정보, 도움말
 
