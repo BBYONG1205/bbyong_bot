@@ -363,8 +363,9 @@ async def 친구추가(interaction:discord.Interaction, 유저:discord.Member):
 
 
 
-async def 돌깍기게임(interaction: discord.Interaction, 증가능력: str, 감소능력: Literal["공격력 감소", "공격속도 감소", "방어력 감소", "이동속도 감소"]):
-    
+async def 돌깎기게임(interaction: discord.Interaction, 증가능력: str, 감소능력: Literal["공격력 감소", "공격속도 감소", "방어력 감소", "이동속도 감소"]):
+    명령어사용자=interaction.user.id
+
     증가능력_입력값 = 증가능력.split(maxsplit=1)
 
     축약어_모음 = {
@@ -378,7 +379,7 @@ async def 돌깍기게임(interaction: discord.Interaction, 증가능력: str, �
         '안상': '안정된 상태', '약무': '약자 무시',
         '에포': '에테르 포식자', '예둔': '예리한 둔기',
         '위모': '위기 모면', '정흡': '정기 흡수',
-        '정단': '정밀 단도','중착': '중갑 착용',
+        '정단': '정밀 단도','중착': '중갑 착용', '중갑': '중갑 착용',
         '질증': '질량 증가', '최마증': '최대 마나 증가',
         '타대': '타격의 대가', '아드': '아드레날린',
         '저받': '저주받은 인형'
@@ -413,62 +414,162 @@ async def 돌깍기게임(interaction: discord.Interaction, 증가능력: str, �
             
         # 각 증가능력이 목록에 없으면 메시지 출력 후 종료
         if 증가능력1 not in 증가능력_목록 or 증가능력2 not in 증가능력_목록:
-            await interaction.response.send_message("올바르지 않은 각인 명이다 뿅!")
+            await interaction.response.send_message("올바르지 않은 각인 명이다 뿅!",ephemeral=True)
             return
         
-        깍기전 = "◇ ◇ ◇ ◇ ◇ ◇ ◇ ◇ ◇ ◇"
-        embed = discord.Embed(title="**돌깍기 게임**", color=0xffffff)
-        embed.add_field(name=증가능력1, value=f"{깍기전}", inline=False)
-        embed.add_field(name=증가능력2, value=f"{깍기전}", inline=False)
-        embed.add_field(name=감소능력, value=f"{깍기전}", inline=False)
+
+        증가능력_남은기회="[1;34m◇ [0m"
+        감소능력_남은기회="[1;31m◇ [0m"
+        #증가능력_성공="[1;34m◆ [0m"
+        #증가능력_실패="[1;30m◆ [0m"
+
+
+        증가능력1_출력값 = 증가능력_남은기회 * 10
+        증가능력2_출력값 = 증가능력_남은기회 * 10
+        감소능력_출력값 = 감소능력_남은기회 * 10
+
+        embed = discord.Embed(title="**돌깎기 게임**", color=0xffffff)
+        embed.add_field(name="**성공확률** ```75%```", value="", inline=False)
+        embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_출력값}\n```", inline=False)
+        embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_출력값}\n```", inline=False)
+        embed.add_field(name=감소능력, value=f"```ansi\n{감소능력_출력값}\n```", inline=False)
 
         button1 = discord.ui.Button(style=discord.ButtonStyle.primary, label=증가능력1)
-        button2 = discord.ui.Button(style=discord.ButtonStyle.danger, label=감소능력)
+        button2 = discord.ui.Button(style=discord.ButtonStyle.primary, label=증가능력2)
+        button3 = discord.ui.Button(style=discord.ButtonStyle.danger, label=감소능력)
 
         view = discord.ui.View()
         view.add_item(button1)
         view.add_item(button2)
+        view.add_item(button3)
                             
         await interaction.response.send_message(embed=embed, view=view)
 
         success_rate = 75
         max_success_rate = 75
         min_success_rate = 25
-        증가능력1_enhancement_chance = 0
-        증가능력2_enhancement_chance = 0
-        감소능력_enhancement_chance = 0
+        증가능력1_시도횟수 = 0
+        증가능력2_시도횟수 = 0
+        감소능력_시도횟수 = 0
     
-        result_message = ""
+        증가능력1_결과 = ""
+        증가능력2_결과 = ""
+        감소능력_결과 = ""
 
         async def 증가능력1_콜백(interaction: discord.Interaction):
-            nonlocal success_rate, 증가능력1_enhancement_chance
-    
-            if 증가능력1_enhancement_chance < 10:
+            nonlocal success_rate, 증가능력1_시도횟수, 증가능력1_결과, 증가능력2_결과, 감소능력_결과
+            버튼사용자=interaction.user.id
+
+            if 명령어사용자 != 버튼사용자:
+                await interaction.response.send_message("다른 사람이 이용 중인 게임이다 뿅!", ephemeral=True)
+                return
+
+            if 증가능력1_시도횟수 < 10:
                 if random.randint(1, 100) <= success_rate:
-                    result_message = f" 🔹 "
+                    증가능력1_결과 += "[1;34m◆ [0m"
                     success_rate = max(min_success_rate, success_rate - 10)
                 else:
-                    result_message = f"◆ "
+                    증가능력1_결과 += "[1;30m◆ [0m"
                     success_rate = min(max_success_rate, success_rate + 10)
 
-                증가능력1_enhancement_chance += 1
-                remaining_chances = 10 - 증가능력1_enhancement_chance
-                result_message += "◇ " * remaining_chances
+                증가능력1_시도횟수 += 1
+                증가능력_남은기회표시 = "[1;34m◇ [0m"
+                감소능력_남은기회표시 = "[1;31m◇ [0m"
+                증1_남은기회 = 10 - 증가능력1_시도횟수
+                증가능력1_남은기회 = 증가능력_남은기회표시 * 증1_남은기회
+                증2_남은기회 = 10 - 증가능력2_시도횟수
+                증가능력2_남은기회 = 증가능력_남은기회표시 * 증2_남은기회
+                감능_남은기회 = 10 - 감소능력_시도횟수
+                감소능력__남은기회 = 감소능력_남은기회표시 * 감능_남은기회
 
-                edit_embed = discord.Embed(title=f"**돌깍기 게임** 성공확률 ({success_rate}%)", color=0xffffff)
-                edit_embed.add_field(name=증가능력1, value=f"{result_message}", inline=False)
-                edit_embed.add_field(name=증가능력2, value=f"{깍기전}", inline=False)
-                edit_embed.add_field(name=감소능력, value=f"{깍기전}", inline=False)
-                print(증가능력1_enhancement_chance)
-
+                edit_embed = discord.Embed(title=f"**돌꺆기 게임**", color=0xffffff)
+                edit_embed.add_field(name=f"**성공확률** ```{success_rate}%```", value="", inline=False)
+                edit_embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_결과}{증가능력1_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_결과}{증가능력2_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=감소능력, value=f"```ansi\n{감소능력_결과}{감소능력__남은기회}\n```", inline=False)
+                
                 await interaction.response.edit_message(embed=edit_embed, view=view)
             else:
-                await interaction.response.send_message(f"{증가능력1}의 최대 횟수를 초과했습니다.",)
+                await interaction.response.send_message(f"{증가능력1}의 남은 기회가 없다 뿅!", ephemeral=True)
+
+        async def 증가능력2_콜백(interaction: discord.Interaction):
+            nonlocal success_rate, 증가능력2_시도횟수, 증가능력1_결과, 증가능력2_결과, 감소능력_결과
+            버튼사용자=interaction.user.id
+
+            if 명령어사용자 != 버튼사용자:
+                await interaction.response.send_message("다른 사람이 이용 중인 게임이다 뿅!", ephemeral=True)
+                return
+
+            if 증가능력2_시도횟수 < 10:
+                if random.randint(1, 100) <= success_rate:
+                    증가능력2_결과 += "[1;34m◆ [0m"
+                    success_rate = max(min_success_rate, success_rate - 10)
+                else:
+                    증가능력2_결과 += "[1;30m◆ [0m"
+                    success_rate = min(max_success_rate, success_rate + 10)
+
+                증가능력2_시도횟수 += 1
+                증가능력_남은기회표시 = "[1;34m◇ [0m"
+                감소능력_남은기회표시 = "[1;31m◇ [0m"
+                증1_남은기회 = 10 - 증가능력1_시도횟수
+                증가능력1_남은기회 = 증가능력_남은기회표시 * 증1_남은기회
+                증2_남은기회 = 10 - 증가능력2_시도횟수
+                증가능력2_남은기회 = 증가능력_남은기회표시 * 증2_남은기회
+                감능_남은기회 = 10 - 감소능력_시도횟수
+                감소능력__남은기회 = 감소능력_남은기회표시 * 감능_남은기회
+
+                edit_embed = discord.Embed(title=f"**돌깎기 게임**", color=0xffffff)
+                edit_embed.add_field(name=f"**성공확률** ```{success_rate}%```", value="", inline=False)
+                edit_embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_결과}{증가능력1_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_결과}{증가능력2_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=감소능력, value=f"```ansi\n{감소능력_결과}{감소능력__남은기회}\n```", inline=False)
+                
+                await interaction.response.edit_message(embed=edit_embed, view=view)
+            else:
+                await interaction.response.send_message(f"{증가능력2}의 남은 기회가 없다 뿅!", ephemeral=True)
+
+        async def 감소능력_콜백(interaction: discord.Interaction):
+            nonlocal success_rate, 감소능력_시도횟수, 증가능력1_결과, 증가능력2_결과, 감소능력_결과
+            버튼사용자=interaction.user.id
+
+            if 명령어사용자 != 버튼사용자:
+                await interaction.response.send_message("다른 사람이 이용 중인 게임이다 뿅!", ephemeral=True)
+                return
+
+            if 감소능력_시도횟수 < 10:
+                if random.randint(1, 100) <= success_rate:
+                    감소능력_결과 += "[1;31m◆ [0m"
+                    success_rate = max(min_success_rate, success_rate - 10)
+                else:
+                    감소능력_결과 += "[1;30m◆ [0m"
+                    success_rate = min(max_success_rate, success_rate + 10)
+
+                감소능력_시도횟수 += 1
+                증가능력_남은기회표시 = "[1;34m◇ [0m"
+                감소능력_남은기회표시 = "[1;31m◇ [0m"
+                증1_남은기회 = 10 - 증가능력1_시도횟수
+                증가능력1_남은기회 = 증가능력_남은기회표시 * 증1_남은기회
+                증2_남은기회 = 10 - 증가능력2_시도횟수
+                증가능력2_남은기회 = 증가능력_남은기회표시 * 증2_남은기회
+                감능_남은기회 = 10 - 감소능력_시도횟수
+                감소능력__남은기회 = 감소능력_남은기회표시 * 감능_남은기회
+
+                edit_embed = discord.Embed(title=f"**돌꺾기 게임**", color=0xffffff)
+                edit_embed.add_field(name=f"**성공확률** ```{success_rate}%```", value="", inline=False)
+                edit_embed.add_field(name=증가능력1, value=f"```ansi\n{증가능력1_결과}{증가능력1_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=증가능력2, value=f"```ansi\n{증가능력2_결과}{증가능력2_남은기회}\n```", inline=False)
+                edit_embed.add_field(name=감소능력, value=f"```ansi\n{감소능력_결과}{감소능력__남은기회}\n```", inline=False)
+                
+                await interaction.response.edit_message(embed=edit_embed, view=view)
+            else:
+                await interaction.response.send_message(f"{감소능력}의 남은 기회가 없다 뿅!", ephemeral=True)
 
         button1.callback = 증가능력1_콜백
-    
+        button2.callback = 증가능력2_콜백
+        button3.callback = 감소능력_콜백
+        
     else:
-        await interaction.response.send_message("두개의 증가능력을 입력해라 뿅!")
+        await interaction.response.send_message("두개의 각인을 입력해야한다 뿅!", ephemeral=True)
         return
 
 

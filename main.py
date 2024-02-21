@@ -113,7 +113,7 @@ async def recruitment_start(interaction: discord.Interaction,내전코드:str):
 async def calculate(interaction: discord.Interaction, 아이템가격: int, 인원 : Literal["4","8","16"]):
     await 경매계산기(interaction, 아이템가격, 인원)
 
-@tree.command(name='돌깍기게임', description='돌깍기 시뮬레이션 게임을 진행합니다.')
+@tree.command(name='돌깎기게임', description='돌깎기 시뮬레이션 게임을 진행합니다.')
 async def stone_game(interaction: discord.Interaction, 증가능력: str, 감소능력: Literal["공격력 감소","공격속도 감소","방어력 감소", "이동속도 감소"]):
     await 돌깍기게임(interaction, 증가능력, 감소능력)
 
