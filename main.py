@@ -1,5 +1,5 @@
 import discord
-from discord import app_commands
+from discord import app_commands, utils
 from collections import defaultdict
 import asyncio
 from typing import Any, Literal
@@ -14,10 +14,30 @@ token = f.readline().strip()
 registered_members = {}
 member_info = {}
 
+class ticket_launcher(discord.ui.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+
+        @discord.ui.button(label = "Create a Ticket", style = discord.ButtonStyle.blurple, custom_id="ticket_button")
+        async def ticket (self, interaction: discord.Interaction, button:discord.ui.Button):
+            ticket = utils.get(interaction.guild.text.channels,name = f"ticket-for{interaction.user.name} - {interaction.user.discriminator}")
+            if ticket is not None : await interaction.response.send_message(f"You already have a ticket open at {ticket.mention}!",ephemeral=True)
+            else:
+                overwrites = {
+                    interaction.guild.default_role: discord.PermissionOverwrite(view_channel = False),
+                    interaction.user:discord.PermissionOverwrite(view_channel = True, send_messages = True, attach_file = True , embed_links = True),
+                    interaction.guild.me:discord.PermissionOverwrite(view_channel = True , send_messages = True, read_message_history = True)
+                }
+                channel = await interaction.guild.create_text_channel(name = f"ticket-for{interaction.user.name} - {interaction.user.discriminator}", overwrites=overwrites, reason=
+                                                                      f"Ticket for {interaction.user}")
+                await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!",ephemeral=True)
+
+
 class aclient(discord.Client):
     def __init__(self):
         super().__init__(intents=discord.Intents.all())
         self.synced = False  # 여기에 synced 초기화 추가
+        self.added = False
         self.user_pattern_counts = defaultdict(int)
 
     async def on_ready(self):
@@ -25,6 +45,7 @@ class aclient(discord.Client):
         if not self.synced: 
             await tree.sync() 
             self.synced = True
+        if not self.addef
         print(f'{self.user}이 시작되었습니다')  # 봇이 시작하였을 때 터미널에 뜨는 말
         game = discord.Game('산책 갈 준비')  # ~~ 하는 중
         await client.change_presence(status=discord.Status.online, activity=game)
@@ -115,5 +136,12 @@ async def stone_game(interaction: discord.Interaction, 증가능력: str, 감소
     await 돌깎기게임(interaction, 증가능력, 감소능력)
 
 
+#티켓 커맨드
+    
+@tree.command(guild = discord.Object(id=1190099624086749184), name='ticket', description='Launches the ticketiong system')
+async def ticketiong(interaction:discord.Interaction):
+    embed = discord.Embed(title="If you need support, click the button below and create a ticket!", color=discord.colour.blue())
+    await interaction.channel.send(embed=embed, view=ticket_launcher())
+    await interaction.response.send_message("Ticketing system launched!", ephemeral=True)
 
 client.run(token)
