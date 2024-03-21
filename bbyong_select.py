@@ -4,6 +4,7 @@ import discord
 
 class UserTierSelect_lol(discord.ui.Select):
     def __init__(self):
+        super().__init__(timeout=None)
         options = [
             discord.SelectOption(label="Ⅰ", value="Ⅰ"),
             discord.SelectOption(label="Ⅱ", value="Ⅱ"),
@@ -18,6 +19,7 @@ class UserTierSelect_lol(discord.ui.Select):
 
 class LineSelect_lol(discord.ui.Select):
     def __init__(self):
+        super().__init__(timeout=None)
         options = [
             discord.SelectOption(label="탑", emoji="<:LOL_TOP:1197071245389336628>", description="Top"),
             discord.SelectOption(label="미드", emoji="<:LOL_MID:1197071240846921809>", description="Mid"),
@@ -83,6 +85,7 @@ class RegisterView_lol(discord.ui.View):
 
 class UserTierSelect_valorant(discord.ui.Select):
     def __init__(self):
+        super().__init__(timeout=None)
         options = [
             discord.SelectOption(label="Ⅰ", value="Ⅰ"),
             discord.SelectOption(label="Ⅱ", value="Ⅱ"),

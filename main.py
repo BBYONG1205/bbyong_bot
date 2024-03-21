@@ -18,19 +18,29 @@ class ticket_launcher(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
 
-        @discord.ui.button(label = "Create a Ticket", style = discord.ButtonStyle.blurple, custom_id="ticket_button")
-        async def ticket (self, interaction: discord.Interaction, button:discord.ui.Button):
-            ticket = utils.get(interaction.guild.text.channels,name = f"ticket-for{interaction.user.name} - {interaction.user.discriminator}")
-            if ticket is not None : await interaction.response.send_message(f"You already have a ticket open at {ticket.mention}!",ephemeral=True)
-            else:
-                overwrites = {
-                    interaction.guild.default_role: discord.PermissionOverwrite(view_channel = False),
-                    interaction.user:discord.PermissionOverwrite(view_channel = True, send_messages = True, attach_file = True , embed_links = True),
-                    interaction.guild.me:discord.PermissionOverwrite(view_channel = True , send_messages = True, read_message_history = True)
-                }
-                channel = await interaction.guild.create_text_channel(name = f"ticket-for{interaction.user.name} - {interaction.user.discriminator}", overwrites=overwrites, reason=
-                                                                      f"Ticket for {interaction.user}")
-                await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!",ephemeral=True)
+    @discord.ui.button(label="Create a Ticket", style=discord.ButtonStyle.blurple, custom_id="ticket_button")
+    async def ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # 채널 찾기
+        ticket_channel_name = f"ticket-for{interaction.user.name}-{interaction.user.discriminator}"
+        ticket_channel = discord.utils.get(interaction.guild.channels, name=ticket_channel_name)
+
+        if ticket_channel is not None:
+            await interaction.response.send_message(f"You already have a ticket open at {ticket_channel.mention}!", ephemeral=True)
+        else:
+
+            game_role = discord.utils.get(interaction.guild.roles, name="내전")
+            overwrites = {
+                game_role: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True),    
+                interaction.guild.default_role: discord.PermissionOverwrite(view_channel=False),
+                interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True),
+                interaction.guild.me: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True)
+            }
+            channel = await interaction.guild.create_text_channel(
+                name=ticket_channel_name,
+                overwrites=overwrites,
+                reason=f"Ticket for {interaction.user}"
+            )
+            await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!", ephemeral=True)
 
 
 class aclient(discord.Client):
@@ -45,7 +55,12 @@ class aclient(discord.Client):
         if not self.synced: 
             await tree.sync() 
             self.synced = True
-        if not self.addef
+
+        if not self.added :
+            self.add_view(ticket_launcher())
+            self.added = True
+        
+
         print(f'{self.user}이 시작되었습니다')  # 봇이 시작하였을 때 터미널에 뜨는 말
         game = discord.Game('산책 갈 준비')  # ~~ 하는 중
         await client.change_presence(status=discord.Status.online, activity=game)
@@ -138,9 +153,9 @@ async def stone_game(interaction: discord.Interaction, 증가능력: str, 감소
 
 #티켓 커맨드
     
-@tree.command(guild = discord.Object(id=1190099624086749184), name='ticket', description='Launches the ticketiong system')
-async def ticketiong(interaction:discord.Interaction):
-    embed = discord.Embed(title="If you need support, click the button below and create a ticket!", color=discord.colour.blue())
+@tree.command(name='역할생성', description='Launches the ticketiong system')
+async def ticketing(interaction:discord.Interaction):
+    embed = discord.Embed(title="If you need support, click the button below and create a ticket!", color=0xffffff)
     await interaction.channel.send(embed=embed, view=ticket_launcher())
     await interaction.response.send_message("Ticketing system launched!", ephemeral=True)
 

@@ -9,7 +9,7 @@ import random, pyperclip
 
 class deletememberButton(discord.ui.View):
     def __init__(self, 유저: discord.Member):
-        super().__init__()
+        super().__init__(timeout=None)
         self.유저 = 유저
 
     @discord.ui.button(label='확인', style=discord.ButtonStyle.green, custom_id='confirm')
@@ -35,7 +35,7 @@ class deletememberButton(discord.ui.View):
         
 class registermember(discord.ui.View):
     def __init__(self, 유저: discord.Member):
-        super().__init__()
+        super().__init__(timeout=None)
         self.유저 = 유저
 
     @discord.ui.button(label='League of Legend', style=discord.ButtonStyle.primary, custom_id='League of Legend')
@@ -138,7 +138,7 @@ class registermember(discord.ui.View):
 
 class only_lol_in_member(discord.ui.View):
     def __init__(self, 유저: discord.Member):
-        super().__init__()
+        super().__init__(timeout=None)
         self.유저 = 유저
     
     @discord.ui.button(label='Valorant', style=discord.ButtonStyle.primary, custom_id='Valorant')
@@ -197,7 +197,7 @@ class only_lol_in_member(discord.ui.View):
 
 class only_val_in_member(discord.ui.View):
     def __init__(self, 유저: discord.Member):
-        super().__init__()
+        super().__init__(timeout=None)
         self.유저 = 유저
 
     @discord.ui.button(label='League of Legend', style=discord.ButtonStyle.primary, custom_id='League of Legend')
@@ -256,7 +256,7 @@ class only_val_in_member(discord.ui.View):
 
 class Reroll(discord.ui.View):
     def __init__(self, 내전코드, 팀1, 팀2, 평균차, 참여자목록):
-        super().__init__()
+        super().__init__(timeout=None)
         
         self.내전코드 = 내전코드
         self.팀1 = 팀1
@@ -334,7 +334,7 @@ def 추천도_계산(평균차):
 
 class copy_button(discord.ui.View):
     def __init__(self, 입찰_적정가, 개이득):
-        super().__init__()
+        super().__init__(timeout=None)
         self.입찰_적정가 = 입찰_적정가
         self.개이득 = 개이득
 
